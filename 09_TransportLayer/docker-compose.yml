@@ -1,0 +1,98 @@
+version: "3.9"
+
+services:
+  # --- Router: Network 1 と Network 2 を橋渡しする ---
+  router:
+    build: .
+    hostname: Router
+    container_name: Router
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    sysctls:
+      - net.ipv4.ip_forward=1
+    environment:
+      REMOVE_DEFAULT_GW: "true"
+      MAC_ADDRESS_ETH0: "aa:bb:cc:dd:ee:01"
+      MAC_ADDRESS_ETH1: "aa:bb:cc:dd:ee:02"
+    networks:
+      network_1:
+        ipv4_address: 172.1.0.254
+      network_2:
+        ipv4_address: 172.2.0.254
+
+  # --- Network 1 (172.1.0.0/24) ---
+  node_a:
+    build: .
+    hostname: NodeA
+    container_name: NodeA
+    cap_add:
+      - NET_ADMIN
+    environment:
+      DEFAULT_GW: "172.1.0.254"
+      MAC_ADDRESS_ETH0: "12:34:56:78:90:01"
+    depends_on:
+      - router
+    networks:
+      network_1:
+        ipv4_address: 172.1.0.101
+
+  node_b:
+    build: .
+    hostname: NodeB
+    container_name: NodeB
+    cap_add:
+      - NET_ADMIN
+    environment:
+      DEFAULT_GW: "172.1.0.254"
+      MAC_ADDRESS_ETH0: "12:34:56:78:90:02"
+    depends_on:
+      - router
+    networks:
+      network_1:
+        ipv4_address: 172.1.0.102
+
+  node_c:
+    build: .
+    hostname: NodeC
+    container_name: NodeC
+    cap_add:
+      - NET_ADMIN
+    environment:
+      DEFAULT_GW: "172.1.0.254"
+      MAC_ADDRESS_ETH0: "12:34:56:78:90:03"
+    depends_on:
+      - router
+    networks:
+      network_1:
+        ipv4_address: 172.1.0.103
+
+  # --- Network 2 (172.2.0.0/24) ---
+  node_x:
+    build: .
+    hostname: NodeX
+    container_name: NodeX
+    cap_add:
+      - NET_ADMIN
+    environment:
+      DEFAULT_GW: "172.2.0.254"
+      MAC_ADDRESS_ETH0: "0a:bc:de:f0:00:04"
+    depends_on:
+      - router
+    networks:
+      network_2:
+        ipv4_address: 172.2.0.104
+
+networks:
+  network_1:
+    name: network_1
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.1.0.0/24
+  network_2:
+    name: network_2
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.2.0.0/24

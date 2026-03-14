@@ -1,0 +1,57 @@
+version: "3.9"
+
+services:
+  node_a:
+    build: .
+    hostname: NodeA
+    container_name: NodeA
+    cap_add:
+      - NET_ADMIN
+    environment:
+      MAC_ADDRESS: "12:34:56:78:90:01"
+    networks:
+      my_networks:
+        ipv4_address: 172.1.0.101
+
+  node_b:
+    build: .
+    hostname: NodeB
+    container_name: NodeB
+    cap_add:
+      - NET_ADMIN
+    environment:
+      MAC_ADDRESS: "12:34:56:78:90:02"
+    networks:
+      my_networks:
+        ipv4_address: 172.1.0.102
+
+  node_c:
+    build: .
+    hostname: NodeC
+    container_name: NodeC
+    cap_add:
+      - NET_ADMIN
+    environment:
+      MAC_ADDRESS: "12:34:56:78:90:03"
+    networks:
+      my_networks:
+        ipv4_address: 172.1.0.103
+
+  node_x:
+    build: .
+    hostname: NodeX
+    container_name: NodeX
+    cap_add:
+      - NET_ADMIN
+    environment:
+      MAC_ADDRESS: "0a:bc:de:f0:00:04"
+    networks:
+      my_networks:
+        ipv4_address: 172.1.0.104
+
+networks:
+  my_networks:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.1.0.0/24
