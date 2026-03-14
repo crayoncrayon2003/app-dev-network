@@ -1,7 +1,7 @@
 
 #define PCAP_NOLIMIT_LOOP  -1
 
-#include "17_NetworkWatch.h"
+#include "NetworkWatch.h"
 
 int main(int argc, char **argv) {
     char errbuf[PCAP_ERRBUF_SIZE];
